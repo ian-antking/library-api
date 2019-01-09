@@ -28,6 +28,7 @@
   "dependencies": {
     "bcrypt": "^3.0.3",
     "express": "^4.16.4",
+    "isemail": "^3.2.0",
     "mongoose": "^5.4.2"
   }
 }
