@@ -21,13 +21,13 @@ describe('user', () => {
         .end((error, res) => {
           expect(error).to.equal(null);
           expect(res.status).to.equal(201);
+          expect(res.body).not.to.have.property('password');
 
           User.findById(res.body._id, (err, user) => {
             expect(err).to.equal(null);
             expect(user.firstName).to.equal('mockFirstname');
             expect(user.lastName).to.equal('mockLastname');
             expect(user.email).to.equal('mockEmail');
-            expect(user.password).to.equal('mockPassword');
             done();
           });
         });
