@@ -1,15 +1,8 @@
-const mongoose = require('mongoose');
-const UserHelpers = require('./helpers/user-helpers');
 const User = require('../src/models/user');
+const UserHelpers = require('./helpers/user-helpers');
 const DataFactory = require('./helpers/data-factory');
 
 describe('user', () => {
-  afterEach((done) => {
-    mongoose.connection.dropDatabase(() => {
-      done();
-    });
-  });
-
   describe('POST /user', () => {
     it('crates a new user', (done) => {
       const data = DataFactory.user();
@@ -36,8 +29,9 @@ describe('user', () => {
           expect(res.body.errors.email).to.equal('Invalid email address');
           User.countDocuments((err, count) => {
             expect(count).to.equal(0);
-          });
-          done();
+            done();
+          })
+            .catch(error => done(error));
         });
     });
     it('requires passwords to be 8 characters long', (done) => {
@@ -48,8 +42,9 @@ describe('user', () => {
           expect(res.body.errors.password).to.equal('Password must be at least 8 characters long');
           User.countDocuments((err, count) => {
             expect(count).to.equal(0);
-          });
-          done();
+            done();
+          })
+            .catch(error => done(error));
         });
     });
   });
