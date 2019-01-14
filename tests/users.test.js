@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
+const UserHelpers = require('./helpers/user-helpers');
 const User = require('../src/models/user');
+const DataFactory = require('./helpers/data-factory');
 
 describe('user', () => {
   afterEach((done) => {
@@ -10,38 +12,26 @@ describe('user', () => {
 
   describe('POST /user', () => {
     it('crates a new user', (done) => {
-      chai.request(server)
-        .post('/user')
-        .send({
-          firstName: 'mockFirstname',
-          lastName: 'mockLastname',
-          email: 'mockEmail@mockemail.com',
-          password: 'mockPassword',
-        })
-        .end((error, res) => {
-          expect(error).to.equal(null);
+      const data = DataFactory.user();
+      UserHelpers.signup(data)
+        .then(res => {
           expect(res.status).to.equal(201);
           expect(res.body).not.to.have.property('password');
 
           User.findById(res.body._id, (err, user) => {
             expect(err).to.equal(null);
-            expect(user.firstName).to.equal('mockFirstname');
-            expect(user.lastName).to.equal('mockLastname');
-            expect(user.email).to.equal('mockEmail@mockemail.com');
+            expect(user.firstName).to.equal(data.firstName);
+            expect(user.lastName).to.equal(data.lastName);
+            expect(user.email).to.equal(data.email);
             done();
           });
-        });
+        })
+        .catch(error => done(error));
     });
     it('requires a valid email', (done) => {
-      chai.request(server)
-        .post('/user')
-        .send({
-          firstName: 'mockFirstname',
-          lastName: 'mockLastname',
-          email: 'mockEmail',
-          password: 'mockPassword',
-        })
-        .end((error, res) => {
+      const data = DataFactory.user({ email: 'mockEmail' });
+      UserHelpers.signup(data)
+        .then(res => {
           expect(res.status).to.equal(422);
           expect(res.body.errors.email).to.equal('Invalid email address');
           User.countDocuments((err, count) => {
@@ -51,15 +41,9 @@ describe('user', () => {
         });
     });
     it('requires passwords to be 8 characters long', (done) => {
-      chai.request(server)
-        .post('/user')
-        .send({
-          firstName: 'mockFirstname',
-          lastName: 'mockLastname',
-          email: 'mockEmail@mockemail.com',
-          password: 'mock',
-        })
-        .end((error, res) => {
+      const data = DataFactory.user({ password: 'pass' });
+      UserHelpers.signup(data)
+        .then(res => {
           expect(res.status).to.equal(422);
           expect(res.body.errors.password).to.equal('Password must be at least 8 characters long');
           User.countDocuments((err, count) => {
