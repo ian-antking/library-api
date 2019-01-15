@@ -18,7 +18,8 @@ describe('Auth', () => {
               done();
             })
             .catch(error => done(error));
-        });
+        })
+        .catch(error => done(error));
     });
     it('handles invalid authentication', (done) => {
       const data = DataFactory.user();
@@ -28,7 +29,8 @@ describe('Auth', () => {
             .then(res => {
               expect(res.status).to.equal(401);
               done();
-            });
+            })
+            .catch(error => done(error));
         })
         .catch(error => done(error));
     });
