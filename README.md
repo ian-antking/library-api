@@ -2,11 +2,11 @@
 
 ## User Sign-up
 
-''' POST /user '''
+``` POST /user```
 
 Post request accepts the following schema:
  
- '''
+ ```
  {
   firstName: {
     type: String,
@@ -25,4 +25,10 @@ Post request accepts the following schema:
     minlength: [8, 'Password must be at least 8 characters long'],
   },
 }
- '''
+ ```
+ 
+ ## User login ##
+  
+ ``` POST /auth/login ```
+ 
+ Valid username and password will recieve a json web token.
