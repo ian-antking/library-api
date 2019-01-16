@@ -96,7 +96,7 @@ describe('Books', () => {
     it('retrieves a list of books', (done) => {
       const user = DataFactory.user();
       UserHelpers.signup(user)
-        .then(() => {
+        .then(sanitizedUser => {
           UserHelpers.login(user)
             .then(credentials => {
               const bookList = [];
@@ -113,11 +113,11 @@ describe('Books', () => {
                         expect(res.status).to.equal(200);
                         expect(res.body.length).to.equal(bookList.length);
 
-                        res.body.forEach((item, i) => {
+                        res.body.forEach((item) => {
                           const book = bookList.find(element => {
                             return element.isbn === item.isbn;
                           });
-                          // expect(item.user).to.equal(user._id);
+                          expect(item.user).to.equal(sanitizedUser.body._id);
                           expect(item.title).to.equal(book.title);
                           expect(item.author).to.equal(book.author);
                           expect(item.genre).to.equal(book.genre);
