@@ -2,11 +2,11 @@ const Book = require('../models/book');
 
 exports.addBook = (req, res) => {
   const book = new Book({
-    title: req.body.book.title,
-    author: req.body.book.author,
-    genre: req.body.book.genre,
-    isbn: req.body.book.isbn,
-    user: req.body.user._id,
+    title: req.body.title,
+    author: req.body.author,
+    genre: req.body.genre,
+    isbn: req.body.isbn,
+    user: req.authorizer._id,
   });
 
   book.save().then(() => {

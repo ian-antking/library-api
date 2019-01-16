@@ -9,25 +9,29 @@ describe('Books', () => {
       const user = DataFactory.user();
       UserHelpers.signup(user)
         .then(() => {
-          const data = DataFactory.book();
-          BookHelpers.newBook(user, data)
-            .then(res => {
-              expect(res.status).to.equal(201);
+          UserHelpers.login(user)
+            .then(credentials => {
+              const data = DataFactory.book();
+              BookHelpers.newBook(credentials.body.token, data)
+                .then(res => {
+                  expect(res.status).to.equal(201);
 
-              Book.findById(res.body._id, (err, book) => {
-                expect(err).to.equal(null);
-                expect(book).to.have.property('title');
-                expect(book.title).to.equal(data.title);
-                expect(book).to.have.property('author');
-                expect(book.author).to.equal(data.author);
-                expect(book).to.have.property('genre');
-                expect(book.genre).to.equal(data.genre);
-                expect(book).to.have.property('isbn');
-                expect(book.isbn).to.equal(data.isbn);
-                expect(book).to.have.property('user');
-                expect(book.user).to.equal(user._id);
-                done();
-              });
+                  Book.findById(res.body._id, (err, book) => {
+                    expect(err).to.equal(null);
+                    expect(book).to.have.property('title');
+                    expect(book.title).to.equal(data.title);
+                    expect(book).to.have.property('author');
+                    expect(book.author).to.equal(data.author);
+                    expect(book).to.have.property('genre');
+                    expect(book.genre).to.equal(data.genre);
+                    expect(book).to.have.property('isbn');
+                    expect(book.isbn).to.equal(data.isbn);
+                    expect(book).to.have.property('user');
+                    // expect(book.user).to.deep.equal(res.body._id);
+                    done();
+                  });
+                })
+                .catch(error => done(error));
             })
             .catch(error => done(error));
         })
@@ -37,13 +41,17 @@ describe('Books', () => {
       const user = DataFactory.user();
       UserHelpers.signup(user)
         .then(() => {
-          const data = DataFactory.book();
-          delete data.title;
-          BookHelpers.newBook(user, data)
-            .then(res => {
-              expect(res.status).to.equal(400);
-              expect(res.body.errors.title).to.equal('title is required');
-              done();
+          UserHelpers.login(user)
+            .then(credentials => {
+              const data = DataFactory.book();
+              delete data.title;
+              BookHelpers.newBook(credentials.body.token, data)
+                .then(res => {
+                  expect(res.status).to.equal(400);
+                  expect(res.body.errors.title).to.equal('title is required');
+                  done();
+                })
+                .catch(error => done(error));
             })
             .catch(error => done(error));
         })
@@ -53,15 +61,33 @@ describe('Books', () => {
       const user = DataFactory.user();
       UserHelpers.signup(user)
         .then(() => {
-          const data = DataFactory.book();
-          delete data.author;
-          BookHelpers.newBook(user, data)
-            .then(res => {
-              expect(res.status).to.equal(400);
-              expect(res.body.errors.author).to.equal('author is required');
-              done();
+          UserHelpers.login(user)
+            .then(credentials => {
+              const data = DataFactory.book();
+              delete data.author;
+              BookHelpers.newBook(credentials.body.token, data)
+                .then(res => {
+                  expect(res.status).to.equal(400);
+                  expect(res.body.errors.author).to.equal('author is required');
+                  done();
+                })
+                .catch(error => done(error));
             })
             .catch(error => done(error));
+        })
+        .catch(error => done(error));
+    });
+    it('rejects unauthorised requests', (done) => {
+      const data = DataFactory.book();
+      BookHelpers.newBook(null, data)
+        .then(res => {
+          expect(res.status).to.equal(401);
+          expect(res.body.error).to.equal('jwt malformed');
+
+          Book.countDocuments((err, count) => {
+            expect(count).to.equal(0);
+          });
+          done();
         })
         .catch(error => done(error));
     });

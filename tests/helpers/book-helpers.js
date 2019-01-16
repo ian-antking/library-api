@@ -1,7 +1,8 @@
-exports.newBook = (user, book) => new Promise((resolve, reject) => {
+exports.newBook = (credentials, book) => new Promise((resolve, reject) => {
   chai.request(server)
     .post('/book')
-    .send({ user, book })
+    .set('Authorizer', credentials)
+    .send(book)
     .end((error, response) => {
       if (error) {
         reject(error);
