@@ -42,6 +42,23 @@ describe('Books', () => {
           BookHelpers.newBook(user, data)
             .then(res => {
               expect(res.status).to.equal(400);
+              expect(res.body.errors.title).to.equal('title is required');
+              done();
+            })
+            .catch(error => done(error));
+        })
+        .catch(error => done(error));
+    });
+    it('requires an author', (done) => {
+      const user = DataFactory.user();
+      UserHelpers.signup(user)
+        .then(() => {
+          const data = DataFactory.book();
+          delete data.author;
+          BookHelpers.newBook(user, data)
+            .then(res => {
+              expect(res.status).to.equal(400);
+              expect(res.body.errors.author).to.equal('author is required');
               done();
             })
             .catch(error => done(error));
