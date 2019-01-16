@@ -4,9 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Library API</title>
+    <title>Viva la Libris</title>
 </head>
 <body>
-    <h1>Hello World!</h1>
+    <h1>Viva la Libris</h1>
+    <h2>Book sharing database api</h2>
+    <h3>POST /user</h3>
+    <ul>
+        <li>firstName (string, required)</li>
+        <li>lastName (string, required)</li>
+        <li>email (string, required)</li>
+        <li>password (string, required, must be 8 characters)</li>
+    </ul>
+    <p>Successful requests will recieve the new user data with the password removed, plus user _id.</p>
+    <h3>POST /auth/login</h3>
+    <ul>
+        <li>email</li>
+        <li>password</li>
+    </ul>
+    <p>Successful requests will be issued with a jwt valid for one day.</p>
 </body>
 </html>
