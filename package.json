@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha tests/**/*.test.js --opts .mocha.opts",
-    "start": "nodemon -r dotenv/config index.js"
+    "start": "node index.js",
+    "start-dev": "nodemon -r dotenv/config index.js"
   },
   "repository": {
     "type": "git",
