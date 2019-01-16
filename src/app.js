@@ -11,7 +11,7 @@ app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/book', bookRouter);
 
-app.get('/', (req, res) => {
+app.get('*', (req, res) => {
   res.sendFile(path.join(`${__dirname}/index.html`));
 });
 
