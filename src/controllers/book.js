@@ -27,3 +27,9 @@ exports.addBook = (req, res) => {
       }
     });
 };
+
+exports.getBooks = (req, res) => {
+  Book.find({}, (err, books) => {
+    res.status(200).send(books);
+  });
+};

@@ -4,7 +4,7 @@ const DataFactory = require('./helpers/data-factory');
 const Book = require('../src/models/book');
 
 describe('Books', () => {
-  describe('POST /books', () => {
+  describe('POST /book', () => {
     it('creates a book listing', (done) => {
       const user = DataFactory.user();
       UserHelpers.signup(user)
@@ -88,6 +88,49 @@ describe('Books', () => {
             expect(count).to.equal(0);
           });
           done();
+        })
+        .catch(error => done(error));
+    });
+  });
+  describe('GET /book', () => {
+    it('retrieves a list of books', (done) => {
+      const user = DataFactory.user();
+      UserHelpers.signup(user)
+        .then(() => {
+          UserHelpers.login(user)
+            .then(credentials => {
+              const bookList = [];
+              for (let i = 0; i < 10; i += 1) {
+                const bookData = DataFactory.book();
+                bookList.push(bookData);
+              }
+              BookHelpers.manyBooks(credentials.body.token, bookList)
+                .then(() => {
+                  Book.countDocuments((err, count) => {
+                    expect(count).to.equal(10);
+                    BookHelpers.getBooks(null)
+                      .then(res => {
+                        expect(res.status).to.equal(200);
+                        expect(res.body.length).to.equal(bookList.length);
+
+                        res.body.forEach((item, i) => {
+                          const book = bookList.find(element => {
+                            return element.isbn === item.isbn;
+                          });
+                          // expect(item.user).to.equal(user._id);
+                          expect(item.title).to.equal(book.title);
+                          expect(item.author).to.equal(book.author);
+                          expect(item.genre).to.equal(book.genre);
+                          expect(item.isbn).to.equal(book.isbn);
+                        });
+                        done();
+                      })
+                      .catch(error => done(error));
+                  });
+                })
+                .catch(error => done(error));
+            })
+            .catch(error => done(error));
         })
         .catch(error => done(error));
     });
